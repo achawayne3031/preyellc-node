@@ -45,8 +45,10 @@ const AuthController = {
           .send(errorRes(403, false, 'Account has been verified already', []))
       }
 
+      let newOtp = generateRandomNumber(6)
+
       await userRepo.update(
-        { otp: generateRandomNumber(6) },
+        { otp: newOtp },
         {
           where: {
             email: req.body.email,
@@ -55,7 +57,7 @@ const AuthController = {
       )
 
       return res.send(
-        successRes(200, true, 'Otp reset was successful', [], '', []),
+        successRes(200, true, 'Otp reset was successful', [], newOtp, []),
       )
     } catch (error) {
       return res.status(400).send(errorRes(400, false, 'Server error', error))
@@ -162,6 +164,8 @@ const AuthController = {
   },
 
   register: async (req: Request, res: Response) => {
+    //// res.set('Access-Control-Allow-Origin', '*')
+
     try {
       const { error } = validateRegisterData(req.body)
       if (error) {
